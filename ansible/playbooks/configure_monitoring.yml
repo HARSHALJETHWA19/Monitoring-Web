@@ -1,0 +1,32 @@
+- name: Configure Prometheus and Node Exporter
+  hosts: monitoring
+  become: yes
+  tasks:
+    - name: Download Prometheus
+      get_url:
+        url: "https://github.com/prometheus/prometheus/releases/download/v2.52.0/prometheus-2.52.0.linux-amd64.tar.gz"
+        dest: /tmp/prometheus.tar.gz
+
+    - name: Extract Prometheus
+      unarchive:
+        src: /tmp/prometheus.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: Configure Prometheus systemd service
+      copy:
+        src: ../files/prometheus.service
+        dest: /etc/systemd/system/prometheus.service
+      notify: restart prometheus
+
+    - name: Start Prometheus
+      systemd:
+        name: prometheus
+        state: started
+        enabled: yes
+
+    - name: Start Node Exporter
+      service:
+        name: node_exporter
+        state: started
+        enabled: yes

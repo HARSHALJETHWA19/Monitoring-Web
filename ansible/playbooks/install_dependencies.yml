@@ -1,0 +1,13 @@
+- name: Install dependencies
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update system packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install required packages
+      yum:
+        name: ['nginx', 'git', 'node_exporter', 'wget', 'unzip']
+        state: present

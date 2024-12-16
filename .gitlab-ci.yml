@@ -1,0 +1,23 @@
+stages:
+  - terraform
+  - ansible
+
+terraform:
+  stage: terraform
+  script:
+    - cd terraform
+    - terraform init
+    - terraform validate
+    - terraform apply -auto-approve
+  only:
+    - main
+
+ansible:
+  stage: ansible
+  script:
+    - cd ansible/playbooks
+    - ansible-playbook -i ../files/hosts.ini install_dependencies.yml
+    - ansible-playbook -i ../files/hosts.ini configure_web.yml
+    - ansible-playbook -i ../files/hosts.ini configure_monitoring.yml
+  only:
+    - main
